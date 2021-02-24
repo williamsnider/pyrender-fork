@@ -1137,10 +1137,8 @@ class Renderer(object):
             color_buf = glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE)
             color_im = np.frombuffer(color_buf, dtype=np.uint8)
             color_im = color_im.reshape((height, width, 4))
-        elif self.bitdepth == "10bit":
+        elif self.bitdepth == "16bit":
             color_buf = glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_SHORT)
-            color_im = color_buf / (2 ** 16 - 1) * (2 ** 10 - 1)  # scale to 2**10 range
-            color_im = color_im.astype(np.int16)
             color_im = np.reshape(color_im, (height, width, 3), order="C")
         else:
             color_buf = glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE)
