@@ -243,7 +243,7 @@ class Renderer(object):
         width, height = self.viewport_width, self.viewport_height
         glBindFramebuffer(GL_READ_FRAMEBUFFER, 0)
         glReadBuffer(GL_FRONT)
-        color_buf = glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE)
+        color_buf = glReadPixels(0, 0, width, height, GL_RGB10_A2, GL_UNSIGNED_BYTE)
 
         # Re-format them into numpy arrays
         color_im = np.frombuffer(color_buf, dtype=np.uint8)
@@ -1034,7 +1034,8 @@ class Renderer(object):
             self._main_cb, self._main_db = glGenRenderbuffers(2)
 
             glBindRenderbuffer(GL_RENDERBUFFER, self._main_cb)
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, self.viewport_width, self.viewport_height)
+            # glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, self.viewport_width, self.viewport_height)
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB10_A2, self.viewport_width, self.viewport_height)
 
             glBindRenderbuffer(GL_RENDERBUFFER, self._main_db)
             glRenderbufferStorage(
@@ -1057,7 +1058,8 @@ class Renderer(object):
             # Generate multisample buffer
             self._main_cb_ms, self._main_db_ms = glGenRenderbuffers(2)
             glBindRenderbuffer(GL_RENDERBUFFER, self._main_cb_ms)
-            glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGBA, self.viewport_width, self.viewport_height)
+            # glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGB, self.viewport_width, self.viewport_height)
+            glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGB10_A2, self.viewport_width, self.viewport_height)
             glBindRenderbuffer(GL_RENDERBUFFER, self._main_db_ms)
             glRenderbufferStorageMultisample(
                 GL_RENDERBUFFER,
@@ -1138,8 +1140,9 @@ class Renderer(object):
             color_im = np.frombuffer(color_buf, dtype=np.uint8)
             color_im = color_im.reshape((height, width, 4))
         elif self.bitdepth == "16bit":
+            # color_buf = glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_SHORT)
             color_buf = glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_SHORT)
-            color_im = np.reshape(color_im, (height, width, 3), order="C")
+            color_im = np.reshape(color_buf, (height, width, 3), order="C")
         else:
             color_buf = glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE)
             color_im = np.frombuffer(color_buf, dtype=np.uint8)
